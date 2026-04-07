@@ -1,0 +1,13 @@
+# Não redirecionar arquivos estáticos - IMPORTANTE: ordem importa!
+/assets/* 200
+/favicon.svg 200
+/*.css 200
+/*.js 200
+/*.png 200
+/*.jpg 200
+/*.svg 200
+/*.ico 200
+
+# Redirecionar tudo mais para index.html
+/*    /index.html   200
+
