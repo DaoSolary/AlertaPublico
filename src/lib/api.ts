@@ -1,40 +1,56 @@
-import axios from 'axios'
+import axios from 'axios';
 
-// URL da API - usar variável de ambiente ou produção por padrão
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  'https://daosolari-1.onrender.com/api';
+// 🌐 Base URL (sem barra no final)
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  'https://seguranca-escolar-backend.onrender.com';
 
-console.log('🌐 API Base URL:', API_BASE_URL);
+if (import.meta.env.DEV) {
+  console.log('🌐 API Base URL:', API_BASE_URL);
+}
 
+// 🔧 Instância do Axios
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 segundos
-})
+  timeout: 30000,
+  withCredentials: true, // 🔥 IMPORTANTE para cookies
+});
 
-// Interceptor para adicionar token
+// 🔐 Interceptor de request (token)
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
+  const token = localStorage.getItem('token');
 
-// Interceptor para tratar erros
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// 🚨 Interceptor de resposta (erros)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      window.location.href = '/login'
+    const status = error.response?.status;
+
+    if (status === 401) {
+      console.warn('🔒 Sessão expirada');
+
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+
+      window.location.href = '/login';
     }
-    return Promise.reject(error)
+
+    if (status === 500) {
+      console.error('💥 Erro interno do servidor');
+    }
+
+    return Promise.reject(error);
   }
-)
+);
 
-export default api
-
+export default api;
