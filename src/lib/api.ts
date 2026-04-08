@@ -3,7 +3,7 @@ import axios from 'axios';
 // 🌐 Base URL (sem barra no final)
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  'https://seguranca-escolar-backend.onrender.com';
+  'https://seguranca-escolar-backend.onrender.com/api';
 
 if (import.meta.env.DEV) {
   console.log('🌐 API Base URL:', API_BASE_URL);
