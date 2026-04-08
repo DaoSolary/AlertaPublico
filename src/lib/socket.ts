@@ -9,7 +9,7 @@ export const initSocket = (token: string): Socket => {
 
   // URL do Socket.IO - usar variável de ambiente ou produção por padrão
   const socketUrl = import.meta.env.VITE_SOCKET_URL || 
-    'https://daosolari-1.onrender.com'
+    'https://seguranca-escolar-backend.onrender.com'
 
   socket = io(socketUrl, {
     auth: {
