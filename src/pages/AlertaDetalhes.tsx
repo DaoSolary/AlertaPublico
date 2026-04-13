@@ -45,6 +45,21 @@ const PRIORIDADE_COLORS = {
   CRITICA: 'bg-red-100 text-red-800',
 }
 
+const getFileUrl = (url: string) => {
+  if (!url) return ''
+
+  // Firebase ou URL externa
+  if (url.startsWith('http')) return url
+
+  // Base da API (Render ou local)
+  const base = api.defaults.baseURL || ''
+
+  // Remove /api se existir
+  const root = base.replace(/\/api$/, '')
+
+  return `${root}${url.startsWith('/') ? '' : '/'}${url}`
+}
+
 export default function AlertaDetalhes() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -442,87 +457,81 @@ export default function AlertaDetalhes() {
 
         {/* Evidências */}
         {alerta.evidencias && alerta.evidencias.length > 0 && (
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Camera className="h-5 w-5" />
-              Evidências ({alerta.evidencias.length})
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {alerta.evidencias.map((evidencia: any) => {
-                const EvidenciaIcon = getEvidenciaIcon(evidencia.tipo)
-                const isVideoFile = isVideo(evidencia.url, evidencia.tipo)
-                const isAudioFile = isAudio(evidencia.url, evidencia.tipo)
-                // Resolver URL absoluta para arquivos servidos pelo backend
-                let fileUrl: string = evidencia.url
-                try {
-                  const base = (api as any)?.defaults?.baseURL || ''
-                  if (!/^https?:\/\//i.test(fileUrl)) {
-                    if (base && /^https?:\/\//i.test(base)) {
-                      const u = new URL(base)
-                      const root = `${u.protocol}//${u.hostname}${u.port ? `:${u.port}` : ''}`
-                      fileUrl = `${root}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`
-                    } else {
-                      // baseURL relativo ('/api'): assumir backend na porta 3001 do mesmo host
-                      const w = window.location
-                      const assumedPort = w.port === '5173' ? '3001' : (w.port || '3001')
-                      const root = `${w.protocol}//${w.hostname}:${assumedPort}`
-                      fileUrl = `${root}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`
-                    }
-                  }
-                } catch {}
+  <div className="border-t border-gray-200 pt-6">
+    <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <Camera className="h-5 w-5" />
+      Evidências ({alerta.evidencias.length})
+    </h3>
 
-                return (
-                  <div key={evidencia.id} className="border border-gray-200 rounded-lg overflow-hidden bg-white">
-                    {isVideoFile ? (
-                      <video
-                        src={fileUrl}
-                        controls
-                        className="w-full h-48 object-cover"
-                        preload="metadata"
-                      >
-                        Seu navegador não suporta vídeos.
-                      </video>
-                    ) : isAudioFile ? (
-                      <div className="p-4 bg-gray-50 flex items-center justify-center">
-                        <FileAudio className="h-12 w-12 text-gray-400" />
-                        <audio src={fileUrl} controls className="ml-4 flex-1">
-                          Seu navegador não suporta áudio.
-                        </audio>
-                      </div>
-                    ) : (
-                      <img
-                        src={fileUrl}
-                        alt={evidencia.nomeArquivo || 'Evidência'}
-                        className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => window.open(fileUrl, '_blank')}
-                      />
-                    )}
-                    <div className="p-3 bg-gray-50 border-t border-gray-200">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm text-gray-600 flex-1 min-w-0">
-                          <EvidenciaIcon className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">{evidencia.nomeArquivo || 'Sem nome'}</span>
-                        </div>
-                        <a
-                          href={fileUrl}
-                          download
-                          className="text-primary-600 hover:text-primary-700 ml-2"
-                          title="Download"
-                        >
-                          <Download className="h-4 w-4" />
-                        </a>
-                      </div>
-                      {evidencia.descricao && (
-                        <p className="text-xs text-gray-500 mt-1">{evidencia.descricao}</p>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {alerta.evidencias.map((evidencia: any) => {
+        const EvidenciaIcon = getEvidenciaIcon(evidencia.tipo)
+        const isVideoFile = isVideo(evidencia.url, evidencia.tipo)
+        const isAudioFile = isAudio(evidencia.url, evidencia.tipo)
+
+        const fileUrl = getFileUrl(evidencia.url)
+
+        return (
+          <div
+            key={evidencia.id}
+            className="border border-gray-200 rounded-lg overflow-hidden bg-white"
+          >
+            {isVideoFile ? (
+              <video
+                src={fileUrl}
+                controls
+                className="w-full h-48 object-cover"
+                preload="metadata"
+              >
+                Seu navegador não suporta vídeos.
+              </video>
+            ) : isAudioFile ? (
+              <div className="p-4 bg-gray-50 flex items-center justify-center">
+                <FileAudio className="h-12 w-12 text-gray-400" />
+                <audio src={fileUrl} controls className="ml-4 flex-1">
+                  Seu navegador não suporta áudio.
+                </audio>
+              </div>
+            ) : (
+              <img
+                src={fileUrl}
+                alt={evidencia.nomeArquivo || 'Evidência'}
+                className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => window.open(fileUrl, '_blank')}
+              />
+            )}
+
+            <div className="p-3 bg-gray-50 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-600 flex-1 min-w-0">
+                  <EvidenciaIcon className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">
+                    {evidencia.nomeArquivo || 'Sem nome'}
+                  </span>
+                </div>
+
+                <a
+                  href={fileUrl}
+                  download
+                  className="text-primary-600 hover:text-primary-700 ml-2"
+                  title="Download"
+                >
+                  <Download className="h-4 w-4" />
+                </a>
+              </div>
+
+              {evidencia.descricao && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {evidencia.descricao}
+                </p>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        )
+      })}
+    </div>
+  </div>
+)}
 
       {/* Mensagens - Sempre visível */}
       <div className="card">
