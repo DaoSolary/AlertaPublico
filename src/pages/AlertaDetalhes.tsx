@@ -630,5 +630,5 @@ export default function AlertaDetalhes() {
           </button>
         </form>
       </div>
-    </div>
+
 
