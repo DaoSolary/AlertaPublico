@@ -16,7 +16,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 30000,
-  withCredentials: true, // 🔥 IMPORTANTE para cookies
+  withCredentials: false, // 🔥 IMPORTANTE para cookies
 });
 
 // 🔐 Interceptor de request (token)

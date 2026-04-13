@@ -49,8 +49,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         url: api.defaults.baseURL,
       });
 
-      // ✅ CORREÇÃO AQUI (rota certa)
-      const response = await api.post('/api/auth/login', {
+      // ✅ CORREÇÃO AQUI (sem /api duplicado)
+      const response = await api.post('/auth/login', {
         email,
         senha,
       });
@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         throw new Error('Resposta inválida do servidor');
       }
 
-      // 💾 Salvar localmente (opcional se usar cookies)
+      // 💾 Salvar token (IMPORTANTE)
       if (token) {
         localStorage.setItem('token', token);
       }
@@ -99,7 +99,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       token: null,
     });
 
-    // opcional: chamar backend
-    // api.post('/api/auth/logout');
+    // opcional
+    // api.post('/auth/logout');
   },
 }));

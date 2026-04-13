@@ -106,62 +106,51 @@ export default function CriarAlertaModal({
     setEvidencias(evidencias.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!formData.tipo || !formData.titulo || !formData.descricao) {
-      toast.error('Preencha todos os campos obrigatórios')
-      return
-    }
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
 
-    setLoading(true)
-    try {
-      // Criar FormData para enviar com evidências
-      const formDataToSend = new FormData()
-      formDataToSend.append('tipo', formData.tipo)
-      formDataToSend.append('titulo', formData.titulo)
-      formDataToSend.append('descricao', formData.descricao)
-      if (formData.endereco) {
-        formDataToSend.append('endereco', formData.endereco)
-      }
-      formDataToSend.append('prioridade', formData.prioridade)
-      
-      if (formData.latitude && formData.longitude) {
-        formDataToSend.append('latitude', formData.latitude)
-        formDataToSend.append('longitude', formData.longitude)
-      }
-
-      // Adicionar evidências
-      evidencias.forEach((file) => {
-        formDataToSend.append('evidencias', file)
-      })
-
-      await api.post('/alertas', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      
-      toast.success('Alerta criado com sucesso! Todos os perfis serão notificados.')
-      setFormData({
-        tipo: '',
-        titulo: '',
-        descricao: '',
-        endereco: '',
-        prioridade: 'MEDIA',
-        latitude: '',
-        longitude: '',
-      })
-      setEvidencias([])
-      onSuccess()
-      onClose()
-    } catch (error: any) {
-      console.error('Erro ao criar alerta:', error)
-      toast.error(error.response?.data?.message || 'Erro ao criar alerta')
-    } finally {
-      setLoading(false)
-    }
+  if (!formData.tipo || !formData.titulo || !formData.descricao) {
+    toast.error('Preencha todos os campos obrigatórios')
+    return
   }
+
+  setLoading(true)
+  try {
+    const payload = {
+      tipo: formData.tipo,
+      titulo: formData.titulo,
+      descricao: formData.descricao,
+      endereco: formData.endereco || undefined,
+      prioridade: formData.prioridade,
+      latitude: formData.latitude || undefined,
+      longitude: formData.longitude || undefined,
+    }
+
+    console.log('🚀 Enviando:', payload)
+
+    await api.post('/alertas', payload)
+
+    toast.success('Alerta criado com sucesso!')
+    
+    setFormData({
+      tipo: '',
+      titulo: '',
+      descricao: '',
+      endereco: '',
+      prioridade: 'MEDIA',
+      latitude: '',
+      longitude: '',
+    })
+    setEvidencias([])
+    onSuccess()
+    onClose()
+  } catch (error: any) {
+    console.error('Erro ao criar alerta:', error)
+    toast.error(error.response?.data?.message || 'Erro ao criar alerta')
+  } finally {
+    setLoading(false)
+  }
+}
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Criar Novo Alerta" size="lg">
