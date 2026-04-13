@@ -41,42 +41,31 @@ export default function CriarAlertaModal({
     prioridade: 'MEDIA',
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!formData.tipo || !formData.titulo || !formData.descricao) {
-      toast.error('Preencha todos os campos obrigatórios')
-      return
-    }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
 
-    setLoading(true)
-    try {
-      await api.post('/alertas', {
-        tipo: formData.tipo,
-        titulo: formData.titulo,
-        descricao: formData.descricao,
-        endereco: formData.endereco || undefined,
-        prioridade: formData.prioridade,
-        // Latitude e longitude serão opcionais (admin pode criar sem localização)
-      })
-      
-      toast.success('Alerta criado com sucesso! Todos os perfis serão notificados.')
-      setFormData({
-        tipo: '',
-        titulo: '',
-        descricao: '',
-        endereco: '',
-        prioridade: 'MEDIA',
-      })
-      onSuccess()
-      onClose()
-    } catch (error: any) {
-      console.error('Erro ao criar alerta:', error)
-      toast.error(error.response?.data?.message || 'Erro ao criar alerta')
-    } finally {
-      setLoading(false)
-    }
+  console.log('📦 formData antes de enviar:', formData)
+
+  if (!formData.tipo || !formData.titulo || !formData.descricao) {
+    toast.error('Preencha todos os campos obrigatórios')
+    return
   }
+
+  const payload = {
+    tipo: formData.tipo,
+    titulo: formData.titulo,
+    descricao: formData.descricao,
+    endereco: formData.endereco || undefined,
+    prioridade: formData.prioridade,
+  }
+
+  console.log('🚀 payload enviado:', payload)
+
+  setLoading(true)
+  try {
+    const response = await api.post('/alertas', payload)
+
+    console.log('✅ resposta backend:', response.data)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Criar Novo Alerta" size="lg">
