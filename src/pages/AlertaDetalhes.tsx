@@ -453,7 +453,7 @@ export default function AlertaDetalhes() {
           )}
         </div>
 
-        {/* Evidências */}
+{/* Evidências */}
 {alerta.evidencias && alerta.evidencias.length > 0 && (
   <div className="border-t border-gray-200 pt-6">
     <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
