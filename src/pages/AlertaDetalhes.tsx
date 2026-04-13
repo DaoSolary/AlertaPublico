@@ -466,7 +466,6 @@ export default function AlertaDetalhes() {
         const EvidenciaIcon = getEvidenciaIcon(evidencia.tipo)
         const isVideoFile = isVideo(evidencia.url, evidencia.tipo)
         const isAudioFile = isAudio(evidencia.url, evidencia.tipo)
-
         const fileUrl = getFileUrl(evidencia.url)
 
         return (
@@ -475,11 +474,7 @@ export default function AlertaDetalhes() {
             className="border border-gray-200 rounded-lg overflow-hidden bg-white"
           >
             {isVideoFile ? (
-              <video
-                src={fileUrl}
-                controls
-                className="w-full h-48 object-cover"
-              />
+              <video src={fileUrl} controls className="w-full h-48 object-cover" />
             ) : isAudioFile ? (
               <div className="p-4 bg-gray-50 flex items-center gap-4">
                 <FileAudio className="h-12 w-12 text-gray-400" />
