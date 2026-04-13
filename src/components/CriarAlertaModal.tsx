@@ -106,7 +106,7 @@ export default function CriarAlertaModal({
     setEvidencias(evidencias.filter((_, i) => i !== index))
   }
 
- const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
 
   if (!formData.tipo || !formData.titulo || !formData.descricao) {
@@ -115,7 +115,9 @@ export default function CriarAlertaModal({
   }
 
   setLoading(true)
+
   try {
+    // 1️⃣ CRIAR ALERTA (SEM FILES)
     const payload = {
       tipo: formData.tipo,
       titulo: formData.titulo,
@@ -126,12 +128,32 @@ export default function CriarAlertaModal({
       longitude: formData.longitude || undefined,
     }
 
-    console.log('🚀 Enviando:', payload)
+    console.log('🚀 Criando alerta:', payload)
 
-    await api.post('/alertas', payload)
+    const response = await api.post('/alertas', payload)
+
+    const alertaId = response.data.id
+
+    // 2️⃣ UPLOAD DE EVIDÊNCIAS (SE EXISTIREM)
+    if (evidencias.length > 0) {
+      const formDataFiles = new FormData()
+
+      evidencias.forEach(file => {
+        formDataFiles.append('arquivos', file) // ⚠️ IMPORTANTE: backend espera "arquivos"
+      })
+
+      await api.post(
+        `/alertas/${alertaId}/evidencias`,
+        formDataFiles,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }
+      )
+    }
 
     toast.success('Alerta criado com sucesso!')
-    
+
+    // reset
     setFormData({
       tipo: '',
       titulo: '',
@@ -141,9 +163,12 @@ export default function CriarAlertaModal({
       latitude: '',
       longitude: '',
     })
+
     setEvidencias([])
+
     onSuccess()
     onClose()
+
   } catch (error: any) {
     console.error('Erro ao criar alerta:', error)
     toast.error(error.response?.data?.message || 'Erro ao criar alerta')
