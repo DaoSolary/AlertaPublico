@@ -117,9 +117,20 @@ const handleSubmit = async (e: React.FormEvent) => {
   setLoading(true)
 
   try {
-    // 1️⃣ CRIAR ALERTA (SEM FILES)
+    // ✅ TIPOS FORA DO PAYLOAD
+    const tipos = [
+      { value: 'VIOLENCIA', label: 'Violência' },
+      { value: 'ASSEDIO', label: 'Assédio' },
+      { value: 'EMERGENCIA_MEDICA', label: 'Emergência Médica' },
+      { value: 'INCENDIO', label: 'Incêndio' },
+      { value: 'INTRUSAO', label: 'Intrusão' },
+      { value: 'DROGA', label: 'Droga' },
+      { value: 'OUTROS', label: 'Outros' },
+    ];
+
+    // 1️⃣ CRIAR ALERTA
     const payload = {
-      tipo: formData.tipo,
+      tipo: formData.tipo, // ✅ ESSENCIAL
       titulo: formData.titulo,
       descricao: formData.descricao,
       endereco: formData.endereco || undefined,
@@ -134,12 +145,12 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     const alertaId = response.data.id
 
-    // 2️⃣ UPLOAD DE EVIDÊNCIAS (SE EXISTIREM)
+    // 2️⃣ UPLOAD DE EVIDÊNCIAS
     if (evidencias.length > 0) {
       const formDataFiles = new FormData()
 
       evidencias.forEach(file => {
-        formDataFiles.append('files', file) // ⚠️ IMPORTANTE: backend espera "arquivos"
+        formDataFiles.append('files', file)
       })
 
       await api.post(
@@ -153,7 +164,6 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     toast.success('Alerta criado com sucesso!')
 
-    // reset
     setFormData({
       tipo: '',
       titulo: '',
