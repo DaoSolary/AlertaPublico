@@ -139,7 +139,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       const formDataFiles = new FormData()
 
       evidencias.forEach(file => {
-        formDataFiles.append('arquivos', file) // ⚠️ IMPORTANTE: backend espera "arquivos"
+        formDataFiles.append('files', file) // ⚠️ IMPORTANTE: backend espera "arquivos"
       })
 
       await api.post(
