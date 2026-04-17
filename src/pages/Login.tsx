@@ -32,7 +32,7 @@ export default function Login() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Alerta público
             </h1>
-            <p className="text-gray-600">Faça login para acessar o dashboard</p>
+            <p className="text-gray-600">Faça login para acessar</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -90,7 +90,7 @@ export default function Login() {
 
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>
-              Credenciais padrão: admin@seguranca.ao / admin123
+            
             </p>
           </div>
         </div>
